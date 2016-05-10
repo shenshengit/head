@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f4f4f4"
+    android:orientation="vertical">
+
+    <include layout="@layout/view_navigationbar" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swiperefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+           >
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/top_rectckerview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rv_bg_color"
+                >
+            </android.support.v7.widget.RecyclerView>
+
+
+            <com.shenshenff.headportrait.views.MyLinearLayout
+                android:id="@+id/id_sl_rm1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </com.shenshenff.headportrait.views.MyLinearLayout>
+
+            <com.shenshenff.headportrait.views.MyLinearLayout2
+                android:id="@+id/id_sl_ql"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"></com.shenshenff.headportrait.views.MyLinearLayout2>
+
+            <com.shenshenff.headportrait.views.MyLinearLayout
+                android:id="@+id/id_sl_rm2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </com.shenshenff.headportrait.views.MyLinearLayout>
+
+            <com.shenshenff.headportrait.views.MyLinearLayout
+                android:id="@+id/id_sl_rm3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </com.shenshenff.headportrait.views.MyLinearLayout>
+
+            <com.shenshenff.headportrait.views.MyLinearLayout
+                android:id="@+id/id_sl_rm4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </com.shenshenff.headportrait.views.MyLinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:text="没有更多了"
+                android:gravity="center"
+                android:background="#ddd"
+                android:textSize="12sp"/>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+</LinearLayout>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eee">
+
+    <!--<include layout="@layout/view_navigationbar" />-->
+
+    <!--<FrameLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/navigationbar_height"
+        android:orientation="horizontal"
+        android:background="#ebffffff">
+        <TextView
+            android:id="@+id/id_tab_meinv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="美女"
+            android:textColor="#e71de7"
+            android:textSize="16sp"
+            android:gravity="center"/>
+        <TextView
+            android:id="@+id/id_tab_shuaige"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="帅哥"
+            android:textColor="#404040"
+            android:textSize="16sp"
+            android:gravity="center"/>
+    </LinearLayout>
+
+        <android.support.v4.view.ViewPager
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/id_viewpager">
+        </android.support.v4.view.ViewPager>
+
+    <!--</FrameLayout>-->
+
+</LinearLayout>

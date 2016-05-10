@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:background="#fff"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <TextView
+        android:id="@+id/id_myll_titletext"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:drawableLeft="@drawable/tools_icon_download_n"
+        android:gravity="center_vertical"
+        android:text="头像" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/id_myll_img1"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="9"
+            android:background="@color/imageDefaultBackgroundColor"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:id="@+id/id_myll_img2"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="9"
+            android:background="@color/imageDefaultBackgroundColor"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:id="@+id/id_myll_img3"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="9"
+            android:background="@color/imageDefaultBackgroundColor"
+            android:scaleType="centerCrop" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <ImageView
+            android:id="@+id/id_myll_img4"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="9"
+            android:background="@color/imageDefaultBackgroundColor"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:id="@+id/id_myll_img5"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="9"
+            android:background="@color/imageDefaultBackgroundColor"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:id="@+id/id_myll_img6"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="9"
+            android:background="@color/imageDefaultBackgroundColor"
+            android:scaleType="centerCrop" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/id_myll_btn"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:background="@null"
+        android:gravity="center"
+        android:text="更多"
+        android:textColor="#555"
+        android:textSize="12sp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#ddd"/>
+</LinearLayout>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:background="@drawable/head_bg"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="160dp">
+
+        <Button
+            android:id="@+id/head_btn_01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:layout_toLeftOf="@+id/head_btn_02"
+            android:background="@drawable/head_btn_01_n"
+            android:drawablePadding="-24dp"
+            android:drawableTop="@drawable/tools_icon_home_n"
+            android:paddingTop="22dp"
+            android:text="反馈"
+            android:textColor="#fff" />
+
+        <Button
+            android:id="@+id/head_btn_02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/head_btn_02_n"
+            android:drawablePadding="-24dp"
+            android:drawableTop="@drawable/tools_icon_home_n"
+            android:paddingTop="22dp"
+            android:text="关于"
+            android:textColor="#fff" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/head_title_bg"
+
+        android:paddingLeft="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="-6dp"
+            android:src="@drawable/ts_icon_sc" />
+
+        <TextView
+            android:id="@+id/id_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/padding_lr"
+            android:paddingLeft="8dp"
+            android:text="0"
+            android:textSize="26sp" />
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/id_number"
+            android:layout_toLeftOf="@+id/id_number"
+            android:text="本地图" />
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>

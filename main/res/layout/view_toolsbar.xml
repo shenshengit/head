@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="58dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#949494" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/id_tools1"
+            style="@style/toolsItem"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:drawableTop="@drawable/tools_icon1"
+            android:text="首页" />
+
+        <!--<Button-->
+            <!--android:id="@+id/id_tools2"-->
+            <!--style="@style/toolsItem"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@null"-->
+            <!--android:drawableTop="@drawable/tools_icon"-->
+            <!--android:text="分类" />-->
+
+        <Button
+            android:id="@+id/id_tools3"
+            style="@style/toolsItem"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:drawableTop="@drawable/tools_icon2"
+            android:text="裁切" />
+
+        <Button
+            android:id="@+id/id_tools4"
+            style="@style/toolsItem"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:drawableTop="@drawable/tools_icon3"
+            android:text="收藏" />
+
+
+    </LinearLayout>
+</FrameLayout>

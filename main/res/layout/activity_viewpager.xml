@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff">
+
+    <!--内容层-->
+
+    <include layout="@layout/view_navigationbar" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/id_item_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#fff">
+
+    </android.support.v4.view.ViewPager>
+
+    <ImageButton
+        android:id="@+id/btn_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="30dp"
+        android:background="@drawable/btn_c1" />
+
+    <ImageButton
+        android:id="@+id/btn_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@drawable/btn_c2" />
+
+    <ImageButton
+        android:id="@+id/btn_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/btn_c3" />
+
+    <!--遮罩层-->
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/zz"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#55000000" />
+
+    <!--浮窗层-->
+    <!--android:visibility="gone"-->
+    <LinearLayout
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="#f6ffffff"
+        android:paddingLeft="@dimen/padding_lr"
+        android:paddingRight="@dimen/padding_lr"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:gravity="center"
+            android:text="效果"
+            android:textSize="20sp"
+            />
+        <TextView
+            android:drawableLeft="@drawable/tools_icon_download_s"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="QQ头像效果"
+            android:textSize="16sp"
+            android:gravity="center_vertical"
+            />
+        <ImageView
+            android:layout_marginTop="@dimen/padding_lr"
+            android:layout_marginBottom="@dimen/padding_lr"
+            android:id="@+id/imageview_qq"
+            android:layout_width="80dp"
+            android:layout_height="80dp" />
+        <TextView
+            android:drawableLeft="@drawable/tools_icon_download_s"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="微信头像效果"
+            android:textSize="16sp"
+            android:gravity="center_vertical"
+             />
+        <ImageView
+            android:layout_marginTop="@dimen/padding_lr"
+            android:layout_marginBottom="@dimen/padding_lr"
+            android:id="@+id/imageview_wx"
+            android:layout_width="74dp"
+            android:layout_height="74dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
+            <TextView
+                android:id="@+id/caiqie"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="裁切"/>
+            <TextView
+                android:layout_width="1px"
+                android:layout_height="26dp"
+                android:background="#555"/>
+            <TextView
+                android:id="@+id/save"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="保存"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

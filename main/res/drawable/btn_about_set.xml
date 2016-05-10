@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:opacity="translucent">
+
+
+
+    <item android:drawable="@drawable/btn_about1"
+        android:gravity="center"
+        android:width="18dp"
+        android:height="18dp"/>
+
+    <item android:drawable="@drawable/btn_about2"
+        android:gravity="center"
+        android:width="22dp"
+        android:height="22dp"
+        />
+
+    <item android:drawable="@drawable/btn_about3"
+        android:gravity="center"
+        android:width="26dp"
+        android:height="26dp"
+        />
+
+</layer-list>
