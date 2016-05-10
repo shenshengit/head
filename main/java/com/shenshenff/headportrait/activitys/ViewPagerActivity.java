@@ -56,7 +56,6 @@ import java.util.List;
  */
 public class ViewPagerActivity extends Activity implements View.OnClickListener {
 
-
     private List<String> imgUrls;
     private int currentPosition;
     private ViewPager viewPager;
@@ -65,11 +64,18 @@ public class ViewPagerActivity extends Activity implements View.OnClickListener 
     private TextView zz;//遮罩
     private LinearLayout ll;//预览布局
 
+    private Uri uri;//裁切的位置
+
+    private ImageView iv_QQ, iv_wx;
+    private TextView caiqie, baocun;
+
+    private boolean isCollect = false;//是否是本地
+    private boolean isCaiqie = false;//是否裁切了
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            LogUtil.i("handle-------");
             //裁切之后注册点击事件并修改字体颜色
             baocun.setOnClickListener(ViewPagerActivity.this);
             baocun.setTextColor(Color.parseColor("#000000"));
@@ -79,15 +85,10 @@ public class ViewPagerActivity extends Activity implements View.OnClickListener 
         }
     };
 
-    private ImageView iv_QQ, iv_wx;
-    private TextView caiqie, baocun;
-    private boolean isCollect = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_viewpager);
-
         initDatas();
         ininViews();
         startBtnOut();
@@ -161,7 +162,6 @@ public class ViewPagerActivity extends Activity implements View.OnClickListener 
                 } else {
                     new ImageLoad().showImageByThread(iv_QQ, imgUrls.get(currentPosition), true);
                     new ImageLoad().showImageByThread(iv_wx, imgUrls.get(currentPosition), false);
-
                 }
             }
         });
@@ -215,135 +215,170 @@ public class ViewPagerActivity extends Activity implements View.OnClickListener 
 
     }
 
-    Uri uri;
-
+    //按钮事件
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.caiqie:
-                if (isCollect) { //在本地裁切
-                    File file = new File(imgUrls.get(currentPosition));
-                    if (file.exists()) {
-                        Uri fileUri = Uri.fromFile(file);
-                        File f = null;//临时文件
-                        if (Environment.getExternalStorageState().equals(
-                                Environment.MEDIA_MOUNTED)) {
-                            File sdcard = Environment.getExternalStorageDirectory();
-                            File dir = new File(sdcard, Consts.CACHEDIRNAME);
-                            if (!dir.exists()) {
-                                dir.mkdirs();
-                                LogUtil.i("创建临时文件夹");
-                            }
-                            f = new File(dir + "/a.jpg");
-                            if (f.exists()) {
-                                f.delete();
-                            }
-                            try {
-                                f.createNewFile();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        uri = Uri.fromFile(f);
-                        Intent intent = new Intent("com.android.camera.action.CROP");
-                        intent.setDataAndType(fileUri, "image/*");
-                        intent.putExtra("crop", "true");
-                        intent.putExtra("aspectX", 1);
-                        intent.putExtra("aspectY", 1);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                        startActivityForResult(intent, 8);
-                    }
-                } else {  //网络图片裁切
+                if (isCollect) {
+                    //在本地裁切
+                    startCaiqie();
+                } else {
+                    //网络图片裁切
                     //1.把图片下载到临时文件夹
+                    //2.取出下载好的图片来裁切 (注意：这里是异步操作要在Task里执行)
                     new MyAsyncTask(true).execute(imgUrls.get(currentPosition));
-                    //2.去除下载好的图片来裁切
-
                 }
                 break;
+
             case R.id.save:
-
-                //LogUtil.i("保存被点击了");
-                layoutOutAnina();
-                //裁切后图片保存的文件名：思路，从文件存储中读取一个值用作文件名，用过之后递增，然后覆盖保存
-
-                //文件从临时文件夹复制到本地文件夹
-                File fromFile;
                 if (isCollect) {
-                    fromFile = new File(Environment.getExternalStorageDirectory() + Consts.CACHEDIRNAME + "/a.jpg");
+                    if (!isCaiqie) {
+                        //1.本地没裁切 ==》 不能点击
+                    } else {
+                        layoutOutAnina();
+                        copyImageToLocal();//2.本地已裁切 ==》 从临时文件夹拷贝裁切好的图片到本地
+                    }
                 } else {
-                    fromFile = new File(Environment.getExternalStorageDirectory() + Consts.CACHEDIRNAME + "/a.jpg");
-                }
-
-                String newName;
-                //读取文件名
-                SharedPreferences sharedPreferences = getSharedPreferences(Consts.CAIJIAN_CACHE_FILENAME, MODE_PRIVATE);
-                int n = sharedPreferences.getInt("caiqian", 0);
-                newName = Environment.getExternalStorageDirectory() + Consts.DIRNAME + "/img" + String.valueOf(n) + ".jpg";
-                n = n + 1;
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("caiqian", n);
-                editor.commit();
-                //LogUtil.i("新名字" + newName);
-                File toFile = new File(newName);
-                if (fromFile.exists()) {
-                    String s = fromFile.getAbsolutePath();
-                    LogUtil.i(s);
-                    if (toFile.exists()) {
-                        toFile.delete();
+                    layoutOutAnina();
+                    if (!isCaiqie) {
+                        new MyAsyncTask(false).execute(imgUrls.get(currentPosition));  //3.网络没裁切 ==》 可以点击默认下载图片
+                    } else {
+                        copyImageToLocal();//4.网络已裁切 ==》从临时文件夹拷贝裁切好的图片到本地
                     }
-                    try {
-                        toFile.createNewFile();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    FileInputStream fis = null;
-                    FileOutputStream fos = null;
-                    try {
-                        fis = new FileInputStream(fromFile);
-                        fos = new FileOutputStream(toFile);
-                        byte[] bytes = new byte[1024];
-                        try {
-                            while (fis.read(bytes) != -1) {
-                                fos.write(bytes, 0, 1024);
-                                fos.flush();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } finally {
-                        ToastUtil.showNoRepeat(ViewPagerActivity.this, "保存成功", Toast.LENGTH_SHORT);
-                        try {
-                            fis.close();
-                            fos.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
                 }
                 break;
         }
     }
 
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    /**
+     * 从需要裁切的图片地址拿到Uri，然后启动裁切Activity
+     */
+    private void startCaiqie() {
 
+        File file;
+        if (isCollect) {
+            file = new File(imgUrls.get(currentPosition));
+        } else {
+            file = new File(Environment.getExternalStorageDirectory() + Consts.CACHEDIRNAME + "/b.jpg");
+        }
+        if (file.exists()) {
+            Uri fileUri = Uri.fromFile(file);
+            File f = null;
+            if (Environment.getExternalStorageState().equals(
+                    Environment.MEDIA_MOUNTED)) {
+                File sdcard = Environment.getExternalStorageDirectory();
+                File dir = new File(sdcard, Consts.CACHEDIRNAME);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                    LogUtil.i("创建临时文件夹");
+                }
+                f = new File(dir + "/a.jpg");
+                if (f.exists()) {
+                    f.delete();
+                    LogUtil.i("删除临时图片");
+                }
+                try {
+                    f.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            uri = Uri.fromFile(f);
+            Intent intent = new Intent("com.android.camera.action.CROP");
+            intent.setDataAndType(fileUri, "image/*");
+            intent.putExtra("crop", "true");
+            intent.putExtra("aspectX", 1);
+            intent.putExtra("aspectY", 1);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            startActivityForResult(intent, 8);
+        }
+    }
+
+    /**
+     * 从临时文件加拷贝裁切好的图到本地文件夹
+     */
+    private void copyImageToLocal() {
+        //裁切后图片保存的文件名：思路，从文件存储中读取一个值用作文件名，用过之后递增，然后覆盖保存
+
+        //文件从临时文件夹复制到本地文件夹
+        File fromFile = new File(Environment.getExternalStorageDirectory() + Consts.CACHEDIRNAME + "/a.jpg");
+        String newName;
+        //读取文件名
+        String str = Environment.getExternalStorageDirectory() + "/" + Consts.CACHEDIRNAME;
+        File dir = new File(str);
+
+        if (!dir.exists()) {
+            dir.mkdirs();
+            LogUtil.i("创建文件夹");
+        }
+
+        SharedPreferences sharedPreferences = getSharedPreferences(Consts.CAIJIAN_CACHE_FILENAME, MODE_PRIVATE);
+        int n = sharedPreferences.getInt("caiqian", 0);
+        newName = Environment.getExternalStorageDirectory() + Consts.DIRNAME + "/img" + String.valueOf(n) + ".jpg";
+        n = n + 1;
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("caiqian", n);
+        editor.commit();
+        LogUtil.i("新名字" + newName);
+        File toFile = new File(newName);
+        if (fromFile.exists()) {
+            String s = fromFile.getAbsolutePath();
+            LogUtil.i(s);
+            try {
+                if (toFile.exists()) {
+                    toFile.delete();
+                }
+                toFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            FileInputStream fis = null;
+            FileOutputStream fos = null;
+            try {
+                fis = new FileInputStream(fromFile);
+                fos = new FileOutputStream(toFile);
+                byte[] bytes = new byte[1024];
+                try {
+                    while (fis.read(bytes) != -1) {
+                        fos.write(bytes, 0, 1024);
+                        fos.flush();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                ToastUtil.showNoRepeat(ViewPagerActivity.this, "裁剪图片保存成功", Toast.LENGTH_SHORT);
+                try {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                    if (fos != null) {
+                        fos.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    //返回键判断
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK
                 && event.getRepeatCount() == 0) {
-            //do something...
-            LogUtil.d("onKeyDown: ");
             if (ll.getVisibility() == View.VISIBLE) {
                 layoutOutAnina();
                 return true;
             }
-
         }
         return super.onKeyDown(keyCode, event);
     }
 
+    //加载ViewPager
     class MyPagerAdapter extends PagerAdapter {
 
         @Override
@@ -375,7 +410,9 @@ public class ViewPagerActivity extends Activity implements View.OnClickListener 
         }
     }
 
-    //下载图片
+    /**
+     * 下载图片，根据参数来判断是否是下载到【临时文件夹】还是【本地文件夹】
+     */
     class MyAsyncTask extends AsyncTask<String, Void, Bitmap> {
 
         //是否下载到临时文件夹
@@ -387,98 +424,103 @@ public class ViewPagerActivity extends Activity implements View.OnClickListener 
 
         @Override
         protected Bitmap doInBackground(String... params) {
-            URL url;
-            Bitmap bitmap = null;
-            FileOutputStream fos;
-            try {
-                url = new URL(params[0]);
-                URLConnection connection;
-                connection = url.openConnection();
-                InputStream in = connection.getInputStream();
-                BufferedInputStream bis = new BufferedInputStream(in);
-                if (Environment.getExternalStorageState().equals(
-                        Environment.MEDIA_MOUNTED)) {
-                    File sdcard = Environment.getExternalStorageDirectory();
-                    File dir = null;
+            if (Environment.getExternalStorageState().equals(
+                    Environment.MEDIA_MOUNTED)) {
+                File sdcard = Environment.getExternalStorageDirectory();
+                File dir = new File(sdcard.getAbsolutePath() + "/" + Consts.DIRNAME);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                File shen = null;
+                try {
                     if (isLinshi) {
-                        dir = new File(sdcard, Consts.CACHEDIRNAME);
+                        String str = sdcard.getAbsolutePath() + "/" + Consts.CACHEDIRNAME;
+                        File lsdir = new File(str);
+                        if (!lsdir.exists()) {
+                            lsdir.mkdirs();
+                        }
+                        shen = new File(lsdir + "/b.jpg");
                     } else {
-                        dir = new File(sdcard, Consts.DIRNAME);
+                        String name = Util.imgName(params[0]);
+                        if (name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".gif")){
+
+                        } else {
+                            name = name+".jpg";
+                        }
+                        shen = new File(dir + "/" + name);
                     }
-                    if (!dir.exists()) {
-                        dir.mkdirs(); //创建文件夹
-                    }
-                    File shen = new File(dir, "/" + Util.imgName(params[0]));
                     if (shen.exists()) {
                         shen.delete();
-                    } else {
-                        fos = new FileOutputStream(shen);
-                        byte[] b = new byte[2 * 1024];
-                        int len;
-                        if (bis != null) {
-                            while ((len = bis.read(b)) != -1) {
-                                fos.write(b, 0, len);
-                            }
+                    }
+                    shen.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                LogUtil.i("保存图片名称" + shen.getAbsolutePath());
+                URL url;
+                Bitmap bitmap = null;
+                FileOutputStream fos = null;
+                InputStream in = null;
+                try {
+                    url = new URL(params[0]);
+                    URLConnection connection;
+                    connection = url.openConnection();
+                    in = connection.getInputStream();
+                    BufferedInputStream bis = new BufferedInputStream(in);
+                    fos = new FileOutputStream(shen);
+                    byte[] b = new byte[2 * 1024];
+                    int len;
+                    if (bis != null) {
+                        while ((len = bis.read(b)) != -1) {
+                            fos.write(b, 0, len);
                         }
                     }
                     bitmap = BitmapFactory.decodeFile(shen.getAbsolutePath());
+                    return bitmap;
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (fos != null) {
+                        try {
+                            fos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (in != null) {
+                        try {
+                            in.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+
             }
-            return bitmap;
+            return null;
         }
 
         @Override
         protected void onPostExecute(Bitmap result) {
             super.onPostExecute(result);
-            //imageView.setImageBitmap(result);
-            if (result != null) {
-                ToastUtil.showNoRepeat(ViewPagerActivity.this, "收藏成功", Toast.LENGTH_SHORT);
-            }
-            if (isLinshi) {
-                String linshiFile = Environment.getExternalStorageDirectory() + Consts.CACHEDIRNAME + "/" + Util.imgName(imgUrls.get(currentPosition));
-                LogUtil.i(linshiFile);
-                File file = new File(linshiFile);
-                if (file.exists()) {
-                    Uri fileUri = Uri.fromFile(file);
-                    File f = null;//临时文件
-                    if (Environment.getExternalStorageState().equals(
-                            Environment.MEDIA_MOUNTED)) {
-                        File sdcard = Environment.getExternalStorageDirectory();
-                        File dir = new File(sdcard, Consts.CACHEDIRNAME);
-                        if (!dir.exists()) {
-                            dir.mkdirs();
-                            LogUtil.i("创建临时文件夹");
-                        }
-                        f = new File(dir + "/a.jpg");
-                        if (f.exists()) {
-                            f.delete();
-                        }
-                        try {
-                            f.createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
 
-                    uri = Uri.fromFile(f);
-                    Intent intent = new Intent("com.android.camera.action.CROP");
-                    intent.setDataAndType(fileUri, "image/*");
-                    intent.putExtra("crop", "true");
-                    intent.putExtra("aspectX", 1);
-                    intent.putExtra("aspectY", 1);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                    startActivityForResult(intent, 8);
+            if (result != null) {
+                if (isLinshi) {
+                    startCaiqie();
+                } else {
+                    ToastUtil.showNoRepeat(ViewPagerActivity.this, "收藏成功", Toast.LENGTH_SHORT);
                 }
             }
+
         }
     }
 
     //动画
-    //首次进入动画
+    /**
+     * 首页进入界面，瞬间把按钮移除屏幕外
+     */
     private void startBtnOut() {
         ObjectAnimator.ofFloat(btnBack, "translationY", 0f, 500f).setDuration(10).start();
         ObjectAnimator.ofFloat(btnPreview, "translationY", 0f, 500f).setDuration(10).start();
@@ -544,8 +586,9 @@ public class ViewPagerActivity extends Activity implements View.OnClickListener 
                 super.onAnimationEnd(animation);
                 zz.setVisibility(View.GONE);
                 ll.setVisibility(View.GONE);
-                //接触保存按钮的按钮事件
-                baocun.setOnClickListener(null);
+                //解除保存按钮的按钮事件
+
+                isCaiqie = false;
                 btnInAnima();
             }
         });
@@ -567,11 +610,13 @@ public class ViewPagerActivity extends Activity implements View.OnClickListener 
         }
     }
 
+    //裁切返回
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case 8:
                 if (resultCode == RESULT_OK) {
+                    isCaiqie = true;
                     Bitmap bitmap = null;
                     try {
                         bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
@@ -582,6 +627,9 @@ public class ViewPagerActivity extends Activity implements View.OnClickListener 
                     message.obj = bitmap;
                     message.what = 1211;
                     handler.sendMessage(message);
+                    if (isCollect) {
+                        baocun.setOnClickListener(null);
+                    }
                 }
                 break;
         }

@@ -143,10 +143,13 @@ public class CollectFragment extends Fragment implements AdapterView.OnItemClick
 
         fileImagePathLists.clear();
         for (int i = 0; i < currentFiles.length; i++) {
-            LogUtil.i("循环======================" + i);
+
             String imgpath = currentFiles[i].getAbsolutePath();
-            fileImagePaths[i] = imgpath;
-            fileImagePathLists.add(imgpath);
+            if (imgpath.endsWith(".jpg")||imgpath.endsWith(".png")||imgpath.endsWith(".gif")){
+                LogUtil.i("循环======================" + i + imgpath);
+                fileImagePaths[i] = imgpath;
+                fileImagePathLists.add(imgpath);
+            }
         }
     }
 

@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.shenshenff.headportrait.R;
+import com.shenshenff.headportrait.utils.LogUtil;
 import com.shenshenff.headportrait.views.HeaderGridView;
 
 /**
@@ -36,7 +37,14 @@ public class ForSdcardAdapter extends BaseAdapter implements AbsListView.OnScrol
     public ForSdcardAdapter(Context context, String[] imagepaths, float itemHeight, HeaderGridView gridView) {
 
         this.inflater = LayoutInflater.from(context);
-        this.mDatas = imagepaths;
+        if (imagepaths.length == 0) {
+            LogUtil.i("数据为空");
+            imagepaths = new String[]{"", "", "", ""};
+            this.mDatas = imagepaths;
+        } else {
+            this.mDatas = imagepaths;
+        }
+
         this.itemHeight = itemHeight;
         this.mGridView = gridView;
 
@@ -84,7 +92,7 @@ public class ForSdcardAdapter extends BaseAdapter implements AbsListView.OnScrol
 
         viewHolder.imageView.setLayoutParams(lp);
         viewHolder.imageView.setTag(mDatas[position]);
-        showImageByAsyncTask(viewHolder.imageView,mDatas[position]);
+        showImageByAsyncTask(viewHolder.imageView, mDatas[position]);
         return convertView;
     }
 
@@ -108,9 +116,9 @@ public class ForSdcardAdapter extends BaseAdapter implements AbsListView.OnScrol
     public void onScrollStateChanged(AbsListView view, int scrollState) {
 
         if (scrollState == SCROLL_STATE_IDLE) {
-           // LogUtil.i("停止");
+            // LogUtil.i("停止");
         } else {
-           // LogUtil.i("滑动");
+            // LogUtil.i("滑动");
         }
 
     }
@@ -151,11 +159,11 @@ public class ForSdcardAdapter extends BaseAdapter implements AbsListView.OnScrol
         }
 
 
-
     }
 
     class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
         private String imgpath;
+
         @Override
         protected Bitmap doInBackground(String... params) {
             imgpath = params[0];
@@ -165,6 +173,7 @@ public class ForSdcardAdapter extends BaseAdapter implements AbsListView.OnScrol
             }
             return bitmap;
         }
+
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             super.onPostExecute(bitmap);
@@ -173,7 +182,7 @@ public class ForSdcardAdapter extends BaseAdapter implements AbsListView.OnScrol
                 imageView.setImageBitmap(bitmap);
             }
             //taskCollection.remove(this);
-          }
+        }
 
 
     }
@@ -187,12 +196,13 @@ public class ForSdcardAdapter extends BaseAdapter implements AbsListView.OnScrol
         options.inJustDecodeBounds = false;
         Bitmap bm = BitmapFactory.decodeFile(imagePath, options);// 使用获取到的inSampleSize值再次解析图片
         //LogUtil.i("压缩之后=" + bm.getWidth() + "X" + bm.getHeight());
-        int i;
-
-        if (bm.getWidth() <= bm.getHeight()) {
-            i = bm.getWidth();
-        } else {
-            i = bm.getHeight();
+        int i = 0;
+        if (bm != null) {
+            if (bm.getWidth() <= bm.getHeight()) {
+                i = bm.getWidth();
+            } else {
+                i = bm.getHeight();
+            }
         }
         Bitmap bitmap = Bitmap.createBitmap(bm, 0, 0, i, i);
         //LogUtil.i("去正方形=" + bitmap.getWidth() + "X" + bitmap.getHeight());
